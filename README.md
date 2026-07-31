@@ -37,6 +37,8 @@ npm run dev          # http://localhost:5173
 cd backend
 npm install
 npm start            # http://localhost:3001, proxies /api to frontend
+
+# (Backend serves the built app - run `npm run build` in frontend/ first)
 ```
 
 `npm test` in `frontend/` runs the geometry/scoring unit tests (Vitest).
@@ -62,9 +64,15 @@ KEY_ALIAS=facevault
 KEY_PASS=...
 ```
 
-Generate the keystore once with `keytool` (never commit it - both files are
-gitignored). If the properties file is absent, `assembleRelease` warns and
-falls back to the debug key.
+Generate the keystore once (never commit it - both files are gitignored):
+
+```bash
+keytool -genkeypair -v -keystore my-release.keystore -alias facevault \
+  -keyalg RSA -keysize 2048 -validity 10000
+```
+
+If the properties file is absent, `assembleRelease` warns and falls back to
+the debug key.
 
 ## Deploy the web app (GitHub Pages)
 
