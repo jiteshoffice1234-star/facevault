@@ -123,6 +123,7 @@
 
 # Build output
 frontend/dist/
+releases/
 
 # Dart
 **/.dart_tool/
