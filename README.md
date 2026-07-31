@@ -4,6 +4,11 @@ Local AI face analysis, golden-ratio scoring, and digital avatar studio.
 
 > Your face never leaves your device. Fully open source, fully local.
 
+## Live links
+
+- **Web app (GitHub Pages):** https://jiteshoffice1234-star.github.io/facevault/
+- **Releases (Android APKs):** https://github.com/jiteshoffice1234-star/facevault/releases
+
 ## Features
 
 - **Face scan** - webcam or photo upload, processed 100% on-device with
@@ -20,7 +25,7 @@ Local AI face analysis, golden-ratio scoring, and digital avatar studio.
   and shadow switches instantly.
 - **Privacy by design** - no accounts, no analytics, no uploads.
 
-## Quick start
+## Quick start (web)
 
 ```bash
 # 1. Frontend
@@ -36,14 +41,46 @@ npm start            # http://localhost:3001, proxies /api to frontend
 
 `npm test` in `frontend/` runs the geometry/scoring unit tests (Vitest).
 
-## Scripts
+## Build the Android APK
+
+Requires: JDK 17+ on PATH (or `JAVA_HOME`) and the Android SDK
+(`android/local.properties` with `sdk.dir=...`, or `ANDROID_HOME` set).
+
+```bash
+cd frontend
+npm install
+npm run apk          # debug APK  -> android/app/build/outputs/apk/debug
+npm run apk:release  # release APK -> android/app/build/outputs/apk/release
+```
+
+For a **properly signed** release build, create `frontend/android/keystore.properties`:
+
+```properties
+KEYSTORE_FILE=my-release.keystore
+STORE_PASS=...
+KEY_ALIAS=facevault
+KEY_PASS=...
+```
+
+Generate the keystore once with `keytool` (never commit it - both files are
+gitignored). If the properties file is absent, `assembleRelease` warns and
+falls back to the debug key.
+
+## Deploy the web app (GitHub Pages)
+
+Pushing to `main` runs `.github/workflows/deploy.yml`, which builds with a
+subpath base and deploys to Pages. Manual trigger: **Actions -> Deploy web app
+to GitHub Pages -> Run workflow**.
+
+## Scripts (frontend)
 
 | Command | Description |
 |---------|-------------|
 | `npm run dev` | Vite dev server with `/api` proxy to backend |
 | `npm run build` | Type-check + production build |
 | `npm run test` | Vitest unit tests |
-| `npm start` (backend) | Express server that also serves `frontend/dist` |
+| `npm run apk` | Build debug APK |
+| `npm run apk:release` | Build signed release APK |
 
 ## Architecture
 
@@ -61,7 +98,6 @@ Weights: symmetry 20, facial thirds 15, golden ratio 15, jawline 12,
 cheekbones 10, eyes 10, lips 8, nose 6, chin 4 (sums to 100).
 
 Scoring is deterministic - the same photo always returns the same score.
-See `docs/` and `PLAN.md` for the full research and roadmap.
 
 ## Disclaimer
 
