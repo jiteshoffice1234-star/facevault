@@ -184,3 +184,7 @@ releases/
 !frontend/android/gradlew.bat
 !frontend/android/gradle/wrapper/gradle-wrapper.jar
 !frontend/android/gradle/wrapper/gradle-wrapper.properties
+
+# Release signing secrets - NEVER commit these
+frontend/android/keystore.properties
+frontend/android/facevault-release.keystore

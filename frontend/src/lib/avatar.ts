@@ -53,7 +53,17 @@ export function buildAvatar(lm: Landmarks, style: AvatarStyle, colors: { skin: s
   const minY = Math.min(...Object.values(IDX).map((i) => pts.get(i)!.y))
   const maxY = Math.max(...Object.values(IDX).map((i) => pts.get(i)!.y))
 
-  const viewBox = `${Math.floor(minX - 30)} ${Math.floor(minY - 30)} ${Math.ceil(maxX - minX + 60)} ${Math.ceil(maxY - minY + 60)}`
+  const vbX = Math.floor(minX - 30)
+  const vbY = Math.floor(minY - 30)
+  const vbW = Math.ceil(maxX - minX + 60)
+  const vbH = Math.ceil(maxY - minY + 60)
+  const viewBox = `${vbX} ${vbY} ${vbW} ${vbH}`
+  // Explicit intrinsic pixel size (largest side 1024) so PNG rasterization is
+  // deterministic in every browser - an SVG with only %-dimensions resolves to
+  // the UA default size and produces distorted/blank exports.
+  const exportScale = 1024 / Math.max(vbW, vbH)
+  const svgW = Math.max(1, Math.round(vbW * exportScale))
+  const svgH = Math.max(1, Math.round(vbH * exportScale))
 
   const jawL = pts.get(IDX.jawL)!
   const jawR = pts.get(IDX.jawR)!
@@ -100,17 +110,14 @@ export function buildAvatar(lm: Landmarks, style: AvatarStyle, colors: { skin: s
 
   const hairStyle = `M ${jawL.x} ${top.y + 4} Q ${top.x} ${minY - 14} ${jawR.x} ${top.y + 4} Q ${(jawL.x + jawR.x) / 2} ${top.y - 16} ${jawL.x} ${top.y + 4} Z`
 
-  const isDark = false
-  void isDark
-
   const gradientDefs =
     style === 'glow'
       ? `<defs><linearGradient id="ac" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${colors.accent}" stop-opacity="0.9"/><stop offset="1" stop-color="${colors.accent}" stop-opacity="0.4"/></linearGradient></defs>`
       : ''
 
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${viewBox}" width="100%" height="100%">
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${viewBox}" width="${svgW}" height="${svgH}">
 ${gradientDefs}
-  <rect x="${Math.floor(minX - 30)}" y="${Math.floor(minY - 30)}" width="${Math.ceil(maxX - minX + 60)}" height="${Math.ceil(maxY - minY + 60)}" fill="${colors.bg}" rx="24"/>
+  <rect x="${vbX}" y="${vbY}" width="${vbW}" height="${vbH}" fill="${colors.bg}" rx="24"/>
   <path d="${hairStyle}" fill="${colors.hair}"/>
   <path d="${facePath}" fill="${colors.skin}" stroke="${colors.line}" stroke-width="1.2"/>
   <path d="${eyebrowPath(browL)}" fill="${colors.hair}"/>
@@ -144,9 +151,12 @@ export function downloadAvatar(result: AvatarResult, format: 'svg' | 'json' | 'p
   } else {
     const img = new Image()
     img.onload = () => {
+      const w = img.width > 0 ? img.width : 512
+      const h = img.height > 0 ? img.height : 512
+      const scale = 1024 / Math.max(w, h)
       const canvas = document.createElement('canvas')
-      canvas.width = img.width * 2
-      canvas.height = img.height * 2
+      canvas.width = Math.round(w * scale)
+      canvas.height = Math.round(h * scale)
       const ctx = canvas.getContext('2d')
       if (!ctx) return
       ctx.drawImage(img, 0, 0, canvas.width, canvas.height)

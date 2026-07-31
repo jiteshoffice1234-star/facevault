@@ -1,0 +1,7 @@
+# Keep Windows batch files with CRLF so cmd.exe can execute them
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.gradle text eol=lf
+*.gradle.kts text eol=lf
+*.sh text eol=lf
+*.properties text eol=lf

@@ -15,8 +15,11 @@ export interface DetectionResult {
 let landmarker: FaceLandmarker | null = null
 let loadingPromise: Promise<FaceLandmarker> | null = null
 
-export const WASM_PATH = '/models/wasm'
-export const MODEL_PATH = '/models/face_landmarker.task'
+// Base-aware paths: works at '/' (local dev, Capacitor) and under a subpath
+// like '/facevault/' (GitHub Pages).
+const base = import.meta.env.BASE_URL ?? '/'
+export const WASM_PATH = `${base}models/wasm`
+export const MODEL_PATH = `${base}models/face_landmarker.task`
 
 export async function getLandmarker(): Promise<FaceLandmarker> {
   if (landmarker) return landmarker
@@ -39,7 +42,11 @@ export async function getLandmarker(): Promise<FaceLandmarker> {
       landmarker = await tryCreate('CPU')
     }
     return landmarker
-  })()
+  })().catch((e) => {
+    // Clear the cached failure so a later attempt can retry.
+    loadingPromise = null
+    throw e
+  })
   return loadingPromise
 }
 

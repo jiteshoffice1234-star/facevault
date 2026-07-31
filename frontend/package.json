@@ -11,7 +11,8 @@
     "test:watch": "vitest",
     "apk:init": "npm run build && cap add android",
     "apk:sync": "npm run build && cap sync android",
-    "apk:build": "npm run build && cap sync android && cd android && gradlew.bat assembleDebug",
+    "apk:build": "npm run build && cap sync android && node scripts/apk.cjs assembleDebug",
+    "apk:release": "npm run build && cap sync android && node scripts/apk.cjs assembleRelease",
     "apk": "npm run apk:build"
   },
   "dependencies": {

@@ -70,7 +70,7 @@ export default function App() {
           aria-label="FaceVault home"
           style={{ background: 'none', border: 'none', display: 'flex', alignItems: 'center', gap: 'var(--space-sm)', padding: 0 }}
         >
-          <img src="/icon.svg" alt="FaceVault" width={32} height={32} style={{ borderRadius: 9 }} />
+          <img src={`${import.meta.env.BASE_URL}icon.svg`} alt="FaceVault" width={32} height={32} style={{ borderRadius: 9 }} />
           <span
             style={{
               fontWeight: 800,

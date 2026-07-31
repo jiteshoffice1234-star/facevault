@@ -2,7 +2,17 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 
+// Deploy under a subpath (GitHub Pages: FACEVAULT_BASE=facevault) or at root
+// (local/APK: unset). We read the value WITHOUT a leading slash so Git Bash's
+// MSYS layer never mangles it into a Windows path.
+const rawBase = process.env.FACEVAULT_BASE || ''
+const base = rawBase ? `/${rawBase.replace(/^\/+|\/+$/g, '')}/` : '/'
+
+// Resolve a root-relative asset path against the configured base.
+const asset = (p: string) => `${base}${p.replace(/^\//, '')}`
+
 export default defineConfig({
+  base,
   plugins: [
     react(),
     VitePWA({
@@ -17,17 +27,18 @@ export default defineConfig({
         background_color: '#0b0e14',
         display: 'standalone',
         orientation: 'portrait',
-        start_url: '/',
+        start_url: base,
         icons: [
-          { src: '/icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
-          { src: '/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
-          { src: '/icon-maskable-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
-          { src: '/icon.svg', sizes: 'any', type: 'image/svg+xml', purpose: 'any' },
+          { src: asset('icon-192.png'), sizes: '192x192', type: 'image/png', purpose: 'any' },
+          { src: asset('icon-512.png'), sizes: '512x512', type: 'image/png', purpose: 'any' },
+          { src: asset('icon-maskable-512.png'), sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+          { src: asset('icon.svg'), sizes: 'any', type: 'image/svg+xml', purpose: 'any' },
         ],
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,svg,ico,png,wasm,json}'],
         maximumFileSizeToCacheInBytes: 16 * 1024 * 1024,
+        navigateFallback: `${base}index.html`,
       },
       devOptions: {
         enabled: false,

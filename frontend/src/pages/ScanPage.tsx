@@ -81,8 +81,10 @@ export default function ScanPage({ onAnalyzed, initialAnalysis, initialLandmarks
     if (video.videoWidth === 0 || video.videoHeight === 0) return
     const w = 720
     const h = 720
-    canvas.width = w
-    canvas.height = h
+    if (canvas.width !== w || canvas.height !== h) {
+      canvas.width = w
+      canvas.height = h
+    }
     const ctx = canvas.getContext('2d')
     if (!ctx) return
     const vw = video.videoWidth
@@ -111,15 +113,30 @@ export default function ScanPage({ onAnalyzed, initialAnalysis, initialLandmarks
 
   const captureFrame = useCallback((): HTMLCanvasElement | null => {
     const video = videoRef.current
-    const canvas = canvasRef.current
-    if (!video || !canvas) return null
+    if (!video) return null
     if (video.videoWidth === 0 || video.videoHeight === 0) {
       setError('Camera is still starting - try again in a moment.')
       return null
     }
-    drawPreview()
-    return canvas
-  }, [drawPreview])
+    // Snapshot the current mirrored frame into a throwaway canvas so the live
+    // preview loop can never overwrite the exact frame the user captured.
+    const snap = document.createElement('canvas')
+    snap.width = 720
+    snap.height = 720
+    const ctx = snap.getContext('2d')
+    if (!ctx) return null
+    const vw = video.videoWidth
+    const vh = video.videoHeight
+    const srcMin = Math.min(vw, vh)
+    const sx = (vw - srcMin) / 2
+    const sy = (vh - srcMin) / 2
+    ctx.save()
+    ctx.translate(720, 0)
+    ctx.scale(-1, 1)
+    ctx.drawImage(video, sx, sy, srcMin, srcMin, 0, 0, 720, 720)
+    ctx.restore()
+    return snap
+  }, [])
 
   const processImage = useCallback(
     async (img: HTMLCanvasElement) => {
@@ -128,6 +145,10 @@ export default function ScanPage({ onAnalyzed, initialAnalysis, initialLandmarks
       try {
         setModelLoading(true)
         await getLandmarker()
+      } catch (e) {
+        setError(`Could not load the analysis model. Check your connection and try again. (${e instanceof Error ? e.message : String(e)})`)
+        setStage('ready')
+        return
       } finally {
         setModelLoading(false)
       }
