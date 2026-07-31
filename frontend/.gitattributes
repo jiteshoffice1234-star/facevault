@@ -5,3 +5,5 @@
 *.gradle.kts text eol=lf
 *.sh text eol=lf
 *.properties text eol=lf
+# gradlew has no extension - force LF so POSIX clones don't break on CRLF
+gradlew text eol=lf
