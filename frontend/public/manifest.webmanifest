@@ -1,0 +1,12 @@
+{
+  "name": "FaceVault",
+  "short_name": "FaceVault",
+  "description": "Local AI face analysis, golden-ratio scoring and digital avatar studio. Your face never leaves your device.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0b0e14",
+  "theme_color": "#0b0e14",
+  "icons": [
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}
