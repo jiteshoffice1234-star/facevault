@@ -188,3 +188,6 @@ releases/
 # Release signing secrets - NEVER commit these
 frontend/android/keystore.properties
 frontend/android/facevault-release.keystore
+
+# Backend AI secrets - NEVER commit these
+backend/.env

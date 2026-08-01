@@ -4,12 +4,13 @@ import ScanPage from './pages/ScanPage'
 import AvatarPage from './pages/AvatarPage'
 import ThemesPage from './pages/ThemesPage'
 import AboutPage from './pages/AboutPage'
+import { PrivacyPage, TermsPage, DisclaimerPage } from './pages/LegalPages'
 import { useTheme } from './state/theme'
 import type { FaceAnalysis } from './lib/analysis'
 import type { Landmarks } from './lib/geometry'
 import { ScanIcon, AvatarIcon, ThemesIcon, AboutIcon } from './components/icons'
 
-type Page = 'scan' | 'avatar' | 'themes' | 'about'
+type Page = 'scan' | 'avatar' | 'themes' | 'about' | 'privacy' | 'terms' | 'disclaimer'
 
 const nav: { id: Page; label: string; icon: (props: { size?: number }) => JSX.Element }[] = [
   { id: 'scan', label: 'Scan', icon: ScanIcon },
@@ -170,6 +171,9 @@ export default function App() {
         {page === 'avatar' && <AvatarPage landmarks={landmarks} imageDataUrl={imageDataUrl} />}
         {page === 'themes' && <ThemesPage />}
         {page === 'about' && <AboutPage />}
+        {page === 'privacy' && <PrivacyPage />}
+        {page === 'terms' && <TermsPage />}
+        {page === 'disclaimer' && <DisclaimerPage />}
       </main>
 
       <footer
@@ -179,9 +183,28 @@ export default function App() {
           color: 'var(--muted)',
           fontSize: 12,
           borderTop: 'var(--border-style)',
+          lineHeight: 1.8,
         }}
       >
-        FaceVault - open source, fully local AI face analysis &amp; avatar studio. No uploads, no tracking.
+        <div>FaceVault - open source, fully local AI face analysis &amp; avatar studio. No uploads, no tracking.</div>
+        <div style={{ display: 'flex', gap: 'var(--space-md)', justifyContent: 'center', flexWrap: 'wrap', marginTop: 6 }}>
+          {(
+            [
+              ['privacy', 'Privacy Policy'],
+              ['terms', 'Terms of Service'],
+              ['disclaimer', 'Disclaimer'],
+              ['about', 'About'],
+            ] as [Page, string][]
+          ).map(([id, label]) => (
+            <button
+              key={id}
+              onClick={() => navigate(id)}
+              style={{ background: 'none', border: 'none', padding: 0, color: 'var(--text2)', fontSize: 12, cursor: 'pointer', textDecoration: 'underline', textUnderlineOffset: 3 }}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
       </footer>
 
       <nav

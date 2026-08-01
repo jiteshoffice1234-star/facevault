@@ -6,6 +6,7 @@ import { analyzeFace } from '../lib/analysis'
 import type { FaceAnalysis } from '../lib/analysis'
 import { css, btn, GradText, Pill } from '../components/ui'
 import { CameraIcon, UploadIcon, LockIcon, RefreshIcon, CloseIcon, SparkIcon } from '../components/icons'
+import AiReport from '../components/AiReport'
 
 interface ScanPageProps {
   onAnalyzed: (analysis: FaceAnalysis, landmarks: Landmarks, image: HTMLCanvasElement) => void
@@ -539,6 +540,7 @@ function ResultPanel({ result }: { result: FaceAnalysis | null; landmarks: Landm
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-md)' }}>
+      <AiReport result={result} />
       <div style={{ ...css.glass, padding: 'var(--space-lg)', textAlign: 'center' }}>
         <div style={{ position: 'relative', width: 150, height: 150, margin: '0 auto' }}>
           <svg width="150" height="150" viewBox="0 0 120 120">
